@@ -1,8 +1,9 @@
+// lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:flutter/services.dart'; // Clipboard için bu import gerekli
+import 'package:flutter/services.dart';
 import '../providers/card_provider.dart';
 import '../providers/transaction_provider.dart';
 
@@ -87,15 +88,21 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  // ✅ Yedekleme Metodu (Tek Tanımlama)
   void _exportData(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final cards = prefs.getString('cards') ?? '[]';
     final transactions = prefs.getString('transactions') ?? '[]';
 
+    final cardsList = jsonDecode(cards);
+    final transactionsList = jsonDecode(transactions);
+
     final data = {
       'cards': cards,
       'transactions': transactions,
       'exportDate': DateTime.now().toIso8601String(),
+      'cardCount': cardsList.length,
+      'transactionCount': transactionsList.length,
     };
 
     final jsonString = jsonEncode(data);
@@ -140,6 +147,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  // ✅ Geri Yükleme Metodu
   void _importData(BuildContext context) {
     showDialog(
       context: context,
@@ -179,6 +187,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  // ✅ Verileri Silme Metodu
   void _resetData(BuildContext context) {
     showDialog(
       context: context,

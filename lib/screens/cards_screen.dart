@@ -1,3 +1,4 @@
+// lib/screens/cards_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/card_provider.dart';
@@ -33,9 +34,18 @@ class CardsScreen extends StatelessWidget {
                   ),
                   title: Text(card.bankName),
                   subtitle: Text('Son 4 Hane: ${card.cardNumber.substring(card.cardNumber.length - 4)}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _showDeleteDialog(context, card.id),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.orange),
+                        onPressed: () => _showEditCardDialog(context, card),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _showDeleteDialog(context, card.id),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -104,6 +114,67 @@ class CardsScreen extends StatelessWidget {
               }
             },
             child: const Text('Kaydet'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditCardDialog(BuildContext context, CreditCard card) {
+    final bankController = TextEditingController(text: card.bankName);
+    final cardController = TextEditingController(text: card.cardNumber);
+    final limitController = TextEditingController(text: card.limit.toString());
+    final statementController = TextEditingController(text: card.statementDay.toString());
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Kart Düzenle'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: bankController,
+              decoration: const InputDecoration(labelText: 'Banka Adı'),
+            ),
+            TextField(
+              controller: cardController,
+              decoration: const InputDecoration(labelText: 'Kart Numarası'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: limitController,
+              decoration: const InputDecoration(labelText: 'Limit (TL)'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: statementController,
+              decoration: const InputDecoration(labelText: 'Hesap Kesim Tarihi (Gün)'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (bankController.text.isNotEmpty && 
+                  cardController.text.isNotEmpty && 
+                  limitController.text.isNotEmpty) {
+                context.read<CardProvider>().updateCard(
+                  card.id,
+                  bankController.text,
+                  cardController.text,
+                  double.parse(limitController.text),
+                  int.parse(statementController.text),
+                );
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('Güncelle'),
           ),
         ],
       ),

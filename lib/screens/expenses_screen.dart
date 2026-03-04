@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/card_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../models/credit_card.dart';
-import '../models/transaction.dart'; // ✅ Transaction import edildi
+import '../models/transaction.dart';
 
 class ExpensesScreen extends StatelessWidget {
   const ExpensesScreen({super.key});
@@ -36,8 +36,9 @@ class ExpensesScreen extends StatelessWidget {
                   cardNumber: '****',
                   limit: 0,
                   usedAmount: 0,
-                  statementDay: 0,
+                  statementDay: 15,
                   createdAt: DateTime.now(),
+                  paymentDueDate: DateTime.now().add(const Duration(days: 30)),
                 ),
               );
 

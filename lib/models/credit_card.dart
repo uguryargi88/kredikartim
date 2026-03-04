@@ -1,3 +1,4 @@
+// lib/models/credit_card.dart
 class CreditCard {
   final String id;
   String bankName;
@@ -6,6 +7,7 @@ class CreditCard {
   double usedAmount;
   final int statementDay;
   final DateTime createdAt;
+  final DateTime paymentDueDate;
 
   CreditCard({
     required this.id,
@@ -15,6 +17,7 @@ class CreditCard {
     required this.usedAmount,
     required this.statementDay,
     required this.createdAt,
+    required this.paymentDueDate,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +29,7 @@ class CreditCard {
       'usedAmount': usedAmount,
       'statementDay': statementDay,
       'createdAt': createdAt.toIso8601String(),
+      'paymentDueDate': paymentDueDate.toIso8601String(),
     };
   }
 
@@ -38,10 +42,12 @@ class CreditCard {
       usedAmount: json['usedAmount'],
       statementDay: json['statementDay'],
       createdAt: DateTime.parse(json['createdAt']),
+      paymentDueDate: json['paymentDueDate'] != null 
+          ? DateTime.parse(json['paymentDueDate']) 
+          : DateTime.now().add(const Duration(days: 30)),
     );
   }
 
-  // Kopya oluşturma metodu
   CreditCard copyWith({
     String? id,
     String? bankName,
@@ -50,6 +56,7 @@ class CreditCard {
     double? usedAmount,
     int? statementDay,
     DateTime? createdAt,
+    DateTime? paymentDueDate,
   }) {
     return CreditCard(
       id: id ?? this.id,
@@ -59,6 +66,7 @@ class CreditCard {
       usedAmount: usedAmount ?? this.usedAmount,
       statementDay: statementDay ?? this.statementDay,
       createdAt: createdAt ?? this.createdAt,
+      paymentDueDate: paymentDueDate ?? this.paymentDueDate,
     );
   }
 }

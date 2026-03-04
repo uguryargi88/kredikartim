@@ -1,6 +1,7 @@
 // lib/screens/cards_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../providers/card_provider.dart';
 import '../models/credit_card.dart';
 
@@ -65,6 +66,7 @@ class CardsScreen extends StatelessWidget {
     final cardController = TextEditingController();
     final limitController = TextEditingController();
     final statementController = TextEditingController(text: '15');
+    DateTime paymentDueDate = DateTime.now().add(const Duration(days: 30));
 
     showDialog(
       context: context,
@@ -92,6 +94,24 @@ class CardsScreen extends StatelessWidget {
               decoration: const InputDecoration(labelText: 'Hesap Kesim Tarihi (Gün)'),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('Son Ödeme Tarihi'),
+              subtitle: Text(DateFormat('dd/MM/yyyy').format(paymentDueDate)),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: paymentDueDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                );
+                if (picked != null) {
+                  paymentDueDate = picked;
+                }
+              },
+            ),
           ],
         ),
         actions: [
@@ -109,6 +129,7 @@ class CardsScreen extends StatelessWidget {
                   cardController.text,
                   double.parse(limitController.text),
                   int.parse(statementController.text),
+                  paymentDueDate,
                 );
                 Navigator.pop(ctx);
               }
@@ -125,6 +146,7 @@ class CardsScreen extends StatelessWidget {
     final cardController = TextEditingController(text: card.cardNumber);
     final limitController = TextEditingController(text: card.limit.toString());
     final statementController = TextEditingController(text: card.statementDay.toString());
+    DateTime paymentDueDate = card.paymentDueDate;
 
     showDialog(
       context: context,
@@ -152,6 +174,24 @@ class CardsScreen extends StatelessWidget {
               decoration: const InputDecoration(labelText: 'Hesap Kesim Tarihi (Gün)'),
               keyboardType: TextInputType.number,
             ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('Son Ödeme Tarihi'),
+              subtitle: Text(DateFormat('dd/MM/yyyy').format(paymentDueDate)),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: paymentDueDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                );
+                if (picked != null) {
+                  paymentDueDate = picked;
+                }
+              },
+            ),
           ],
         ),
         actions: [
@@ -170,6 +210,7 @@ class CardsScreen extends StatelessWidget {
                   cardController.text,
                   double.parse(limitController.text),
                   int.parse(statementController.text),
+                  paymentDueDate,
                 );
                 Navigator.pop(ctx);
               }

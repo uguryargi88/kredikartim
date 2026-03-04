@@ -35,7 +35,7 @@ class CardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addCard(String bankName, String cardNumber, double limit, int statementDay) async {
+  Future<void> addCard(String bankName, String cardNumber, double limit, int statementDay, DateTime paymentDueDate) async {
     try {
       print('➕ Yeni kart ekleniyor: $bankName');
       final newCard = CreditCard(
@@ -46,6 +46,7 @@ class CardProvider extends ChangeNotifier {
         usedAmount: 0,
         statementDay: statementDay,
         createdAt: DateTime.now(),
+        paymentDueDate: paymentDueDate,
       );
       _cards.add(newCard);
       await _saveCards();
@@ -56,7 +57,7 @@ class CardProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateCard(String id, String bankName, String cardNumber, double limit, int statementDay) async {
+  Future<void> updateCard(String id, String bankName, String cardNumber, double limit, int statementDay, DateTime paymentDueDate) async {
     try {
       print('✏️ Kart güncelleniyor: $id');
       final index = _cards.indexWhere((c) => c.id == id);
@@ -66,9 +67,10 @@ class CardProvider extends ChangeNotifier {
           bankName: bankName,
           cardNumber: cardNumber,
           limit: limit,
-          usedAmount: _cards[index].usedAmount, // Mevcut kullanımı koru
+          usedAmount: _cards[index].usedAmount,
           statementDay: statementDay,
           createdAt: _cards[index].createdAt,
+          paymentDueDate: paymentDueDate,
         );
         await _saveCards();
         print('✅ Kart güncellendi');
@@ -105,6 +107,20 @@ class CardProvider extends ChangeNotifier {
     } catch (e) {
       print('❌ Kart silme hatası: $e');
     }
+  }
+
+  // ✅ Yaklaşan Ödeme Tarihi Olan Kartları Getir
+  List<CreditCard> getCardsWithUpcomingPayment(int daysAhead) {
+    final now = DateTime.now();
+    final upcomingCards = _cards.where((card) {
+      final daysUntilPayment = card.paymentDueDate.difference(now).inDays;
+      return daysUntilPayment >= 0 && daysUntilPayment <= daysAhead;
+    }).toList();
+    
+    // Ödeme tarihi yakına göre sırala
+    upcomingCards.sort((a, b) => a.paymentDueDate.compareTo(b.paymentDueDate));
+    
+    return upcomingCards;
   }
 
   Future<void> _saveCards() async {
